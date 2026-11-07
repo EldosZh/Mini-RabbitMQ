@@ -1,0 +1,13 @@
+.tools/
+target/
+data/
+*.wal
+*.lock
+*.tmp
+node_modules/
+dist/
+.env
+*.log
+.idea/
+.vscode/
+*.tsbuildinfo
