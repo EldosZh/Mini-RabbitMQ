@@ -1,0 +1,48 @@
+services:
+  mini-rabbitmq:
+    build: .
+    image: mini-rabbitmq:local
+    ports: ["127.0.0.1:8080:8080"]
+    environment:
+      MINIRABBIT_TOKEN: ${MINIRABBIT_TOKEN:?Set MINIRABBIT_TOKEN to at least 16 characters}
+    volumes: ["broker-data:/app/data"]
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "java", "-cp", "/app/minirabbit.jar", "com.minirabbit.server.HealthCheck"]
+      interval: 10s
+      timeout: 8s
+      retries: 5
+      start_period: 20s
+  order-producer:
+    image: mini-rabbitmq:local
+    entrypoint: ["java", "-cp", "/app/minirabbit.jar", "com.minirabbit.examples.Demo", "producer"]
+    environment: &client-env
+      MINIRABBIT_URL: http://mini-rabbitmq:8080
+      MINIRABBIT_TOKEN: ${MINIRABBIT_TOKEN:?Set MINIRABBIT_TOKEN}
+    depends_on:
+      mini-rabbitmq: {condition: service_healthy}
+    restart: "no"
+  order-consumer:
+    image: mini-rabbitmq:local
+    entrypoint: ["java", "-cp", "/app/minirabbit.jar", "com.minirabbit.examples.Demo", "order-consumer"]
+    environment: *client-env
+    depends_on:
+      mini-rabbitmq: {condition: service_healthy}
+  notification-consumer:
+    image: mini-rabbitmq:local
+    entrypoint: ["java", "-cp", "/app/minirabbit.jar", "com.minirabbit.examples.Demo", "notification-worker"]
+    environment: *client-env
+    depends_on:
+      mini-rabbitmq: {condition: service_healthy}
+  dashboard:
+    build: dashboard
+    ports: ["127.0.0.1:3000:8080"]
+    depends_on:
+      mini-rabbitmq: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+volumes:
+  broker-data:
