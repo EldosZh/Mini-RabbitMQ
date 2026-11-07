@@ -1,0 +1,16 @@
+host: 0.0.0.0
+port: 8080
+storageDirectory: /app/data
+fsyncPolicy: always
+maxPendingOperations: 128
+maxNetworkRequests: 32
+maxConsumers: 256
+maxPrefetch: 256
+maxInFlight: 2048
+maxTotalMessages: 10000
+maxMessageBytes: 1048576
+maxResidentBytes: 16777216
+visibilityTimeoutMs: 30000
+consumerIdleTimeoutMs: 60000
+compactionIntervalMs: 60000
+metricsEnabled: true
