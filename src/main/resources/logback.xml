@@ -1,0 +1,1 @@
+<configuration><appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender"><target>System.err</target><encoder><pattern>time=%date{ISO8601} level=%level thread=%thread logger=%logger{24} message="%msg"%n</pattern></encoder></appender><root level="INFO"><appender-ref ref="STDERR"/></root></configuration>
